@@ -27,80 +27,56 @@ function analisarPartida(){
         list_N.push(parseInt(i.textContent))
     }
     console.log(list_N)
+
     // Analisar casas do player X (analisar se uma das combinações do player estiver 2/3, caso sim, executar função jogadaDefensiva())
     let X = document.querySelectorAll(".X")
-    let respX = selecionarCombinacao(X, list_Combinations)
+    let respX = selecionarCombinacao(X, list_N, list_Combinations)
+
     // Analisar casas da máquina O (analisar qual a melhor jogada para completar um combinação 3/3)
     let O = document.querySelectorAll(".O")
-    let respO = selecionarCombinacao(O, list_Combinations)
-    
-    let n1=0;
-    let n2=0;
-    if(typeof O[0] == 'undefined'){
-        jogadaRandomica(list_N)
+    let respO = selecionarCombinacao(O, list_N, list_Combinations)
+
+    if(typeof respO != 'undefined'){
+        return jogadaOfensiva(respO)
     }
-    else if(typeof respO[0] != 'undefined'){
-        if(respO.length > n1){
-            n1 = respO.length
-            jogadaOfensiva(respO, list_N)
-        }
-    }
-    else if(typeof respX[0] != 'undefined'){
-        if(respX.length > n2){
-            n2 = respX.length
-            jogadaDefensiva(respX, list_N)
-        }
+    else if(typeof respX != 'undefined'){
+        return jogadaDefensiva(respX)
     }else{
-        jogadaRandomica(list_N)
+        return jogadaRandomica(list_N)
     }
 }
 
-function jogadaDefensiva(resp, list_N){
+function jogadaDefensiva(i){
 //(impedir que o player complete uma combinação 3/3)
-    for(let comb of resp){
-        for(let i of comb){
-            for(let i2 of list_N){
-                if(i == i2){
-                    square[i].innerHTML += "<img class='img' src='./assets/escudo.png' alt='escudo.png'>"
-                    square[i].classList.remove('N');
-                    return square[i].classList.add('O');
-                }
-            }
-        }
-    }
+    square[i].innerHTML += "<img class='img' src='./assets/escudo.png' alt='escudo.png'>"
+    square[i].classList.remove('N');
+    return square[i].classList.add('O');
 }
 
-function jogadaOfensiva(resp, list_N){
-    for(let comb of resp){
-        for(let i of comb){
-            for(let i2 of list_N){
-                if(i == i2){
-                    console.log(square[i])
-                    square[i].innerHTML += "<img class='img' src='./assets/escudo.png' alt='escudo.png'>"
-                    square[i].classList.remove('N');
-                    return square[i].classList.add('O');
-                }else{
-                    return jogadaRandomica(list_N)
-                }
-            }
-        }
-    }
+function jogadaOfensiva(i){
+    console.log(square[i])
+    square[i].innerHTML += "<img class='img' src='./assets/escudo.png' alt='escudo.png'>"
+    square[i].classList.remove('N');
+    return square[i].classList.add('O');   
 }
 
 function jogadaRandomica(list_N){
 //(inicialmente, começar com uma jogada aleatória e depois tentar completar uma das combinações)
-    let n;
-    while(typeof list_N[n] == 'undefined'){
-        n = parseInt(Math.random()*10)
+    if(list_N.length > 0){
+        let n;
+        while(typeof list_N[n] == 'undefined'){
+            n = parseInt(Math.random()*10)
+        }
+        let i = list_N[n]
+        square[i].innerHTML += "<img class='img' src='./assets/escudo.png' alt='escudo.png'>"
+        square[i].classList.remove('N');
+        return square[i].classList.add('O');
+    }else{
+        return
     }
-    let i = list_N[n]
-    square[i].innerHTML += "<img class='img' src='./assets/escudo.png' alt='escudo.png'>"
-    square[i].classList.remove('N');
-    return square[i].classList.add('O');
-
 }
 
-function selecionarCombinacao(XO, list_Combinations){
+function selecionarCombinacao(XO, list_N, list_Combinations){
     let list_XO = []
     for(let i of XO){
         list_XO.push(parseInt(i.textContent))
@@ -118,13 +94,20 @@ function selecionarCombinacao(XO, list_Combinations){
                 for(let i of list_XO){
                     if(c0 == i && c1 == n || c1 == i && c0 == n || c0 == i && c2 == n || c2 == i && c0 == n ||c2 == i && c1 == n || c1 == i && c2 == n){
                         listCombS.push(comb)
+                        for(let i of list_N){
+                            for(let comb of listCombS){
+                                for(let i2 of comb){
+                                    if(i == i2){
+                                        console.log(comb)
+                                        return i
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
             }
         }
     }
-    listCombS = [...new Set(listCombS)]
-    console.log(listCombS)
-    return listCombS
 }
