@@ -99,7 +99,6 @@ function selecionarCombinacao(XO, list_N, list_Combinations) {
                         }
                     }
                 }
-
             }
         }
     }
